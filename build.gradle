@@ -1,0 +1,93 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.github.node-gradle.node' version '7.0.2'
+}
+
+
+
+group = 'Placement'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo a Quiz project'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+    // Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+// MongoDB (ONLY this one — correct)
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+// Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+// OpenAPI / Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+
+// Utilities
+    implementation 'org.modelmapper:modelmapper:3.2.4'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+// JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
+// Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+// Dev tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+// Tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+// env
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+}
+
+
+node {
+    nodeProjectDir = file("${projectDir}/src/main/Frontend")
+    download = true
+    version = "20.11.0"
+    npmVersion = "10.2.4"
+}
+
+
+tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
+    dependsOn tasks.named('npmInstall')
+    args = ['run', 'build']
+}
+
+tasks.register('copyFrontend', Copy) {
+    dependsOn npmBuild
+    from "${projectDir}/src/main/Frontend/build"
+    into "${projectDir}/src/main/resources/static"
+}
+
+processResources.dependsOn copyFrontend
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
