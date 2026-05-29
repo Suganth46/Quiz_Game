@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: quiz-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      JWT_SECRET: ${JWT_SECRET}
+    restart: on-failure
