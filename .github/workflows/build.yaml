@@ -34,8 +34,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
-             push: true
-             tags: suganth46/quizgame:latest
+          context: .
+          push: true
+          tags: suganth46/quizgame:latest
 
 
 
