@@ -19,6 +19,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
       - name: Build with Gradle
         run: ./gradlew build
+        env:
+          CI : false
       - name: docker login
         uses: docker/login-action@v4
         with:
